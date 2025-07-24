@@ -78,8 +78,8 @@ const Testimonial = () => {
         `}</style>
 
       <div className="marquee-row w-full mx-auto max-w-5xl overflow-hidden relative">
-        <div className="absolute left-0 top-0 h-full w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
-        <div className="max-w-2xl  z-20 my-20">
+        <div className="absolute left-0 top-0 h-full w-20 z-1 pointer-events-none bg-gradient-to-r from-white to-transparent"></div>
+        <div className="max-w-2xl mx-auto z-20 my-20">
           <div className="text-center">
             <h2 className="text-slate-700 text-[42px] font-semibold">
               Loved by Creators
@@ -96,7 +96,7 @@ const Testimonial = () => {
             )
           )}
         </div>
-        <div className="absolute right-0 top-0 h-full w-20 md:w-40 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent"></div>
+        <div className="absolute right-0 top-0 h-full w-20 md:w-40 z-1 pointer-events-none bg-gradient-to-l from-white to-transparent"></div>
       </div>
     </>
   );
