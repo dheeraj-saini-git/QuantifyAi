@@ -1,0 +1,15 @@
+# Ignore a specific file
+secret.txt
+
+# Ignore all `.log` files
+*.log
+
+# Ignore a folder
+node_modules/
+
+# Ignore all `.env` files
+.env
+
+# Ignore everything in a folder except a file
+temp/*
+!temp/keepme.txt
