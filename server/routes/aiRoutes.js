@@ -10,5 +10,4 @@ router.post('/generate-blog-title', auth, generateBlogTitle)
 router.post('/generate-image', auth, generateImage)
 
 
-
 export default router
