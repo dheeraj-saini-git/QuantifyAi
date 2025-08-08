@@ -180,3 +180,101 @@ export const removeImageBackground = async (req,res)=>{
     }
     
 }
+
+export const removeImageObject = async (req,res)=>{
+    try {
+        const {userId} = req.auth()
+        const {image} = req.file
+        const {object} = req.body
+        const plan = req.plan
+        
+        const free_usage = req.free_usage
+
+        if(plan !== 'Premium' && free_usage >= 10){
+            return res.json({success: false, message: "This feature is only available for premium subscriptions"})
+        }
+        
+        const {public_id} = await cloudinary.uploader.upload(image.path)
+
+        const image_url = cloudinary.url(public_id,{
+            transformation: [{ effect : `gen_remove: ${object}` }],
+            resource_type: 'image'
+        })
+
+        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, ${`Remove ${object} from image`}, ${image_url}, ${publish ?? false})`
+
+        res.json({ success: true, content: image_url})
+
+        if(plan !== 'Premium'){
+            await clerkClient.users.updateUserMetadata(userId,{
+                privateMetadata : {
+                    free_usage : free_usage + 1
+                }
+            })
+        }
+
+        res.json({success:true, content})
+    
+    } catch (error) {
+        console.log(error.message)
+        res.json({success:false, message:error.message})  
+    }
+    
+}
+
+
+
+export const resumeReview = async (req,res)=>{
+    try {
+        const {userId} = req.auth()
+        const resume = req.file
+       
+        const plan = req.plan
+        
+        const free_usage = req.free_usage
+
+        if(plan !== 'Premium' && free_usage >= 10){
+            return res.json({success: false, message: "This feature is only available for premium subscriptions"})
+        }
+        
+        if(resume.size > 5 * 1024 * 1024){
+            return res.json({success : false, message: "Resume file size exceeds allowed size (5Mb)."})
+        }
+
+        const dataBuffer = fs.readFileSync(resume.path)
+        const pdfData = await pdf(dataBuffer)
+
+        const prompt = `Review the following resume and provide contructive feedback on its strength, weakness, and areas for improvement. Resume Content:\n\n ${pdfData.text}`
+
+          const response = await openai.chat.completions.create({
+            model : "gemini-2.0-flash",
+            messages : [{
+                role : "user",
+                content : prompt,
+            }],
+            temperature : 0.7,
+            max_tokens : length
+        })
+
+        const content = response.choices[0].message.content
+
+        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, 'Review the uploaded resume', ${content}, 'resume-review)`
+
+        res.json({ success: true, content: image_url})
+
+        if(plan !== 'Premium'){
+            await clerkClient.users.updateUserMetadata(userId,{
+                privateMetadata : {
+                    free_usage : free_usage + 1
+                }
+            })
+        }
+
+        res.json({success:true, content})
+    
+    } catch (error) {
+        console.log(error.message)
+        res.json({success:false, message:error.message})  
+    }
+    
+}
