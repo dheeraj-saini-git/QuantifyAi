@@ -4,6 +4,7 @@ import 'dotenv/config.js'
 import { clerkMiddleware, requireAuth } from '@clerk/express'
 import router from './routes/aiRoutes.js'
 import connectCloudinary from './configs/cloudinary.js'
+import userRouter from './routes/userRoutes.js'
 
 const app = express()
 const PORT = process.env.PORT|| 3000
@@ -19,6 +20,7 @@ app.get('/', (req,res)=> res.send('Server is Live!'))
 app.use(requireAuth())
 
 app.use('/api/ai', router )
+app.use('/api/user', userRouter)
 
 app.listen(PORT, ()=>{
     console.log('Server is running on port', PORT)
