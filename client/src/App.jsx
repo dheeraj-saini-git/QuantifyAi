@@ -11,7 +11,7 @@ import RemoveBackground from './pages/RemoveBackground'
 import RemoveObject from './pages/RemoveObject'
 import ReviewResume from './pages/ReviewResume'
 import { useAuth } from '@clerk/clerk-react'
-
+import {Toaster} from 'react-hot-toast'
 
 const App = () => {
 const { getToken } = useAuth()

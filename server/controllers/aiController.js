@@ -16,7 +16,6 @@ export const generateArticle = async (req,res)=>{
         const {userId} = req.auth()
         const {prompt, length} = req.body
         const plan = req.plan
-        console.log(req.body)
         const free_usage = req.free_usage
 
         if(plan !== 'Premium' && free_usage >= 10){
@@ -71,8 +70,8 @@ export const generateBlogTitle = async (req,res)=>{
                 role : "user",
                 content : prompt,
             }],
-            temperature : 0.7,
-            max_tokens : length
+            temperature : 0.7
+
         })
 
         const content = response.choices[0].message.content
