@@ -12,12 +12,13 @@ const PORT = process.env.PORT|| 3000
 await connectCloudinary()
 
 app.use(cors())
-app.use(express.json()),
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.use(clerkMiddleware())
 
-app.get('/', (req,res)=> res.send('Server is Live!'))
 
 app.use(requireAuth())
+app.get('/', (req,res)=> res.send('Server is Live!'))
 
 app.use('/api/ai', router )
 app.use('/api/user', userRouter)

@@ -3,8 +3,8 @@ import {clerkClient} from '@clerk/express'
 const auth = async (req,res,next)=>{
 
 try {
-    const {userId, has} = await req.auth()
-    const hasPremiumPlan = await has({plan : 'premium'})
+    const {userId, has} =  await req.auth()
+    const hasPremiumPlan =  await has({plan : 'Premium'})
     const user = await clerkClient.users.getUser(userId)
 
     if(!hasPremiumPlan && user.privateMetadata.free_usage){
@@ -16,7 +16,7 @@ try {
         req.free_usage = 0
     }
 
-    req.plan = hasPremiumPlan ? 'premium' : 'free'
+    req.plan = hasPremiumPlan ? 'Premium' : 'Free'
     next()
 } catch (error) {
     res.json({success: false, message : error.message})

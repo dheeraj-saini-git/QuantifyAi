@@ -96,33 +96,32 @@ export const generateBlogTitle = async (req,res)=>{
 
 
 export const generateImage = async (req,res)=>{
+
     try {
         const {userId} = req.auth()
         const {prompt, publish} = req.body
         const plan = req.plan
-        console.log(prompt)
         const free_usage = req.free_usage
-
         if(plan !== 'Premium' && free_usage >= 10){
             return res.json({success: false, message: "Limited reached. Upgrade to continue"})
         }
 
        const formData = new FormData()
+
        formData.append('prompt', prompt)
 
        const {data} = await axios.post("https://clipdrop-api.co/text-to-image/v1", formData, {
         headers: {'x-api-key' : process.env.CLIPDROP_API_KEY},
         responseType: "arraybuffer"
        })
+       
+       const base64Image = `data:image/png;base64,${Buffer.from(data, "binary").toString("base64")}`;
 
-       const base64Image = `data:image/png;base64,${Buffer.from(data, 'binary').toString('base64')}`
-
-       const {secure_url} = await cloudinary.uploader.upload(base64Image)
+       const {secure_url} = await cloudinary.uploader.upload(base64Image, { resource_type: "image" })
 
         await sql `INSERT INTO creations (user_id, prompt, content, type, publish) values(${userId}, ${prompt}, ${secure_url}, 'image', ${publish ?? false})`
 
-        res.json({ success: true, content: secure_url})
-
+        
         if(plan !== 'Premium'){
             await clerkClient.users.updateUserMetadata(userId,{
                 privateMetadata : {
@@ -130,8 +129,8 @@ export const generateImage = async (req,res)=>{
                 }
             })
         }
-
-        res.json({success:true, content})
+        res.json({ success: true, content: secure_url})
+        
     } catch (error) {
         console.log(error.message)
         res.json({success:false, message:error.message})  
@@ -143,9 +142,9 @@ export const generateImage = async (req,res)=>{
 export const removeImageBackground = async (req,res)=>{
     try {
         const {userId} = req.auth()
-        const {image} = req.file
+        const image = req.file
         const plan = req.plan
-        console.log(prompt)
+    
         const free_usage = req.free_usage
 
         if(plan !== 'Premium' && free_usage >= 10){
@@ -154,14 +153,11 @@ export const removeImageBackground = async (req,res)=>{
         
        const {secure_url} = await cloudinary.uploader.upload(image.path, {
         transformation: [ {
-            effect : 'backgroundRemoval',
-            background_removal: 'remove_the_background'
+            effect : 'background_removal'
         }]
        })
-
-        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, "Remove background from image", ${secure_url}, 'image', ${publish ?? false})`
-
-        res.json({ success: true, content: secure_url})
+      
+        await sql `INSERT INTO creations (user_id, prompt, content, type) values(${userId}, ${'Removed background from image'}, ${secure_url}, 'image')`
 
         if(plan !== 'Premium'){
             await clerkClient.users.updateUserMetadata(userId,{
@@ -170,8 +166,8 @@ export const removeImageBackground = async (req,res)=>{
                 }
             })
         }
-
-        res.json({success:true, content})
+        console.log(secure_url)
+        res.json({ success: true, content: secure_url})
     
     } catch (error) {
         console.log(error.message)
@@ -183,7 +179,7 @@ export const removeImageBackground = async (req,res)=>{
 export const removeImageObject = async (req,res)=>{
     try {
         const {userId} = req.auth()
-        const {image} = req.file
+        const image = req.file
         const {object} = req.body
         const plan = req.plan
         
@@ -196,14 +192,12 @@ export const removeImageObject = async (req,res)=>{
         const {public_id} = await cloudinary.uploader.upload(image.path)
 
         const image_url = cloudinary.url(public_id,{
-            transformation: [{ effect : `gen_remove: ${object}` }],
+            transformation: [{ effect : `gen_remove:prompt_${object}`}],
             resource_type: 'image'
         })
-
-        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, ${`Remove ${object} from image`}, ${image_url}, ${publish ?? false})`
-
-        res.json({ success: true, content: image_url})
-
+        
+        await sql `INSERT INTO creations (user_id, prompt, content, type) values(${userId}, ${`Remove ${object} from image`}, ${image_url}, 'image')`
+    
         if(plan !== 'Premium'){
             await clerkClient.users.updateUserMetadata(userId,{
                 privateMetadata : {
@@ -212,7 +206,7 @@ export const removeImageObject = async (req,res)=>{
             })
         }
 
-        res.json({success:true, content})
+       res.json({ success: true, content: image_url})
     
     } catch (error) {
         console.log(error.message)
@@ -220,7 +214,6 @@ export const removeImageObject = async (req,res)=>{
     }
     
 }
-
 
 
 export const resumeReview = async (req,res)=>{
@@ -243,7 +236,7 @@ export const resumeReview = async (req,res)=>{
         const dataBuffer = fs.readFileSync(resume.path)
         const pdfData = await pdf(dataBuffer)
 
-        const prompt = `Review the following resume and provide contructive feedback on its strength, weakness, and areas for improvement. Resume Content:\n\n ${pdfData.text}`
+        const prompt = `Review the following resume and provide contructive feedback on its strength, weakness, technical areas for improvement and overall suggestions. Resume Content:\n\n ${pdfData.text}`
 
           const response = await openai.chat.completions.create({
             model : "gemini-2.0-flash",
@@ -251,15 +244,13 @@ export const resumeReview = async (req,res)=>{
                 role : "user",
                 content : prompt,
             }],
-            temperature : 0.7,
-            max_tokens : length
+            temperature : 0.7
+            
         })
 
         const content = response.choices[0].message.content
 
-        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, 'Review the uploaded resume', ${content}, 'resume-review)`
-
-        res.json({ success: true, content: image_url})
+        await sql `INSERT INTO creations (user_id, prompt, content, type ) values(${userId}, 'Review the uploaded resume', ${content}, 'resume-review')`
 
         if(plan !== 'Premium'){
             await clerkClient.users.updateUserMetadata(userId,{
@@ -268,7 +259,7 @@ export const resumeReview = async (req,res)=>{
                 }
             })
         }
-
+        
         res.json({success:true, content})
     
     } catch (error) {
