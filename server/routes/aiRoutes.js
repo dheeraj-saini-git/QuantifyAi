@@ -8,7 +8,6 @@ const router = express.Router()
 router.post('/generate-article', auth, generateArticle)
 router.post('/generate-blog-title', auth, generateBlogTitle)
 router.post('/generate-image', auth, generateImage)
-// router.post('/generate-image', auth, (req,res)=>{ console.log('api worked')})
 
 router.post('/remove-image-background', auth, upload.single('image'), removeImageBackground)
 router.post('/remove-image-object', auth, upload.single('image'), removeImageObject)
