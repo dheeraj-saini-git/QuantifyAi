@@ -10,7 +10,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 const Community = () => {
   const [creations, setCreations] = useState([]);
   const { user } = useUser();
-  const {loading, setLaoding} = useState(true)
+  const [loading, setLoading] = useState(true)
   const { getToken } = useAuth()
 
   const fetchCreations = async () => {
@@ -25,12 +25,12 @@ const Community = () => {
     } catch (error) {
       toast.error(error.message)
     }
-    setLaoding(false)
+    setLoading(false)
 
   };
  const imageLikeToggle = async (id)=>{
     try {
-      const {data} = await axios.post('/api/user/toggle-like-creation')
+      const {data} = await axios.post('/api/user/toggle-like-creation', {id}, { headers: {Authorization: `Bearer ${await getToken()}`}})
       if(data.success){
         toast.success(data.message)
         await fetchCreations()
@@ -47,7 +47,7 @@ const Community = () => {
     }
   }, [user]);
 
-  return (
+  return !loading ? (
     <div className="flex-1 h-full flex flex-col gap-4 p-6">
       Creations
       <div className="bg-white h-full w-full rounded-xl overflow-y-scroll">
@@ -82,7 +82,11 @@ const Community = () => {
         ))}
       </div>
     </div>
-  );
+  ) : (
+    <div className="flex justify-center items-center h-full">
+      <span className="w-10 h-10 border-3 rounded-full border-primary border-t-transparent animate-spin"></span>
+    </div>
+  )
 };
 
 export default Community;

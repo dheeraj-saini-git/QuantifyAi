@@ -28,25 +28,24 @@ export const toggleLikeCreations = async (req, res)=>{
         const {userId} = req.auth()
         const { id } = req.body
         const [ creation ] = await sql `SELECT * FROM creations WHERE id = ${id}`
-        console.log(creation)
+       
         if(!creation){
             return res.json({ success: false, message: 'Creation not found'})
         }
-        const currentLikes = creation.currentLikes
+        const currentLikes = creation.likes
         const userIdStr = userId.toString()
         let updatedLikes
         let message
         
         if(currentLikes.includes(userIdStr)){
-            updatedLikes = currentLikes.filter((user)=> user.id !== userIdStr)
+            updatedLikes = currentLikes.filter((user)=> user !== userIdStr)
             message = 'Creation unliked'
         }else{
             updatedLikes = [...currentLikes, userIdStr]
             message = 'Creation Liked'
         }
 
-        const formattedArray = `${updatedLikes.join(',')}` 
-        
+        const formattedArray = `{${updatedLikes.map(u => `"${u}"`).join(',')}}`
         await sql `UPDATE creations SET likes = ${formattedArray} :: text[] WHERE id= ${id}`
 
         res.json({ success: true, message })

@@ -7,7 +7,7 @@ const userRouter = express.Router()
 
 userRouter.get('/get-user-creations', auth, getUserCreations)
 userRouter.get('/get-published-creations', auth, getPublishedCreations)
-userRouter.post('/get-like-creation', auth, toggleLikeCreations)
+userRouter.post('/toggle-like-creation', auth, toggleLikeCreations)
 
 export default userRouter
 
