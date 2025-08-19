@@ -16,9 +16,8 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(clerkMiddleware())
 
-
-app.use(requireAuth())
 app.get('/', (req,res)=> res.send('Server is Live!'))
+app.use(requireAuth())
 
 app.use('/api/ai', router )
 app.use('/api/user', userRouter)
