@@ -104,7 +104,7 @@ export const generateImage = async (req,res)=>{
         const free_usage = req.free_usage
         console.log(plan)
         if(plan !== 'Premium' && free_usage >= 10){
-            return res.json({success: false, message: "Limited reached. Upgrade to continue"})
+            return res.json({success: false, message: `Limited reached. Upgrade to continue, current plan is ${plan}`})
         }
 
        const formData = new FormData()
