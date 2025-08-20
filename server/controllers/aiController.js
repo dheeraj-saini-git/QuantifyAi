@@ -102,6 +102,7 @@ export const generateImage = async (req,res)=>{
         const {prompt, publish} = req.body
         const plan = req.plan
         const free_usage = req.free_usage
+        console.log(plan)
         if(plan !== 'Premium' && free_usage >= 10){
             return res.json({success: false, message: "Limited reached. Upgrade to continue"})
         }
