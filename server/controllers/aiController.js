@@ -18,7 +18,7 @@ export const generateArticle = async (req,res)=>{
         const plan = req.plan
         const free_usage = req.free_usage
 
-        if(plan !== 'Premium' && free_usage >= 10){
+        if(plan !== 'Premium' && free_usage >= 20){
             return res.json({success: false, message: "Limited reached. Upgrade to continue"})
         }
 
@@ -60,7 +60,7 @@ export const generateBlogTitle = async (req,res)=>{
         const plan = req.plan
         const free_usage = req.free_usage
 
-        if(plan !== 'Premium' && free_usage >= 10){
+        if(plan !== 'Premium' && free_usage >= 20){
             return res.json({success: false, message: "Limited reached. Upgrade to continue"})
         }
 
@@ -103,8 +103,8 @@ export const generateImage = async (req,res)=>{
         const plan = req.plan
         const free_usage = req.free_usage
         console.log(plan)
-        if(plan !== 'Premium' && free_usage >= 10){
-            return res.json({success: false, message: `Limited reached. Upgrade to continue, current plan is ${plan}`})
+        if(plan !== 'Premium' && free_usage >= 20){
+            return res.json({success: false, message: "Limited reached. Upgrade to continue"})
         }
 
        const formData = new FormData()
@@ -148,7 +148,7 @@ export const removeImageBackground = async (req,res)=>{
     
         const free_usage = req.free_usage
 
-        if(plan !== 'Premium' && free_usage >= 10){
+        if(plan !== 'Premium' && free_usage >= 20){
             return res.json({success: false, message: "This feature is only available for premium subscriptions"})
         }
         
@@ -186,7 +186,7 @@ export const removeImageObject = async (req,res)=>{
         
         const free_usage = req.free_usage
 
-        if(plan !== 'Premium' && free_usage >= 10){
+        if(plan !== 'Premium' && free_usage >= 20){
             return res.json({success: false, message: "This feature is only available for premium subscriptions"})
         }
         
@@ -226,7 +226,7 @@ export const resumeReview = async (req,res)=>{
         
         const free_usage = req.free_usage
 
-        if(plan !== 'Premium' && free_usage >= 10){
+        if(plan !== 'Premium' && free_usage >= 20){
             return res.json({success: false, message: "This feature is only available for premium subscriptions"})
         }
         
