@@ -50,16 +50,16 @@ const Community = () => {
   return !loading ? (
     <div className="flex-1 h-full flex flex-col gap-4 p-6">
       Creations
-      <div className="bg-white h-full w-full rounded-xl overflow-y-scroll">
+      <div className="bg-white rounded-xl w-full overflow-hidden">
         {creations.map((creation, index) => (
           <div
             key={index}
-           className="relative group flex flex-col pl-3 pt-3 w-full sm:w-1/2 lg:w-1/3"
+           className="relative group block pl-3 pt-3 w-full sm:w-1/2 lg:w-1/3 overflow-hidden"
           >
             <img
               src={creation.content}
               alt=""
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full max-h-96 object-cover rounded-lg relative z-0"
             />
 
             <div className="absolute bottom-0 top-0 right-0 left-3 flex gap-2 items-end justify-end group-hover:justify-between p-3 group-hover:bg-gradient-to-b from-transparent to-black/80 text-white rounded-lg">
