@@ -50,11 +50,11 @@ const Community = () => {
   return !loading ? (
     <div className="flex-1 h-full flex flex-col gap-4 p-6">
       Creations
-      <div className="bg-white rounded-xl w-full overflow-hidden">
+      <div className="bg-white h-full w-full rounded-xl overflow-y-scroll">
         {creations.map((creation, index) => (
           <div
             key={index}
-           className="relative group block pl-3 pt-3 w-full sm:w-1/2 lg:w-1/3 overflow-hidden"
+           className="relative group flex flex-col pl-3 pt-3 w-full sm:w-1/2 lg:w-1/3"
           >
             <img
               src={creation.content}
